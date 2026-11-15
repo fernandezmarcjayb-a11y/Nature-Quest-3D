@@ -1,0 +1,38 @@
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+
+const canvas=document.querySelector('#gameCanvas');
+const scene=new THREE.Scene();scene.background=new THREE.Color('#a9d8d0');scene.fog=new THREE.Fog('#a9d8d0',24,52);
+const camera=new THREE.PerspectiveCamera(54,innerWidth/innerHeight,.1,100);
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+scene.add(new THREE.HemisphereLight(0xe4f8ff,0x405c35,2));const sun=new THREE.DirectionalLight(0xffedc4,2.1);sun.position.set(-8,18,8);sun.castShadow=true;scene.add(sun);
+const world=new THREE.Group();scene.add(world);
+const ground=new THREE.Mesh(new THREE.CircleGeometry(20,72),new THREE.MeshStandardMaterial({color:0x79ad69,roughness:.95}));ground.rotation.x=-Math.PI/2;ground.receiveShadow=true;world.add(ground);
+const player=new THREE.Group();world.add(player);
+const body=new THREE.Mesh(new THREE.CapsuleGeometry(.42,.85,5,10),new THREE.MeshStandardMaterial({color:0x3e9860}));body.position.y=.95;body.castShadow=true;player.add(body);
+const head=new THREE.Mesh(new THREE.SphereGeometry(.29,16,12),new THREE.MeshStandardMaterial({color:0xf2d6b3}));head.position.set(0,1.77,.12);head.castShadow=true;player.add(head);
+const hat=new THREE.Mesh(new THREE.CylinderGeometry(.34,.38,.12,16),new THREE.MeshStandardMaterial({color:0xe6a946}));hat.position.set(0,2.02,.1);hat.castShadow=true;player.add(hat);
+function tree(x,z,s=1){const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.13*s,.2*s,1.4*s,9),new THREE.MeshStandardMaterial({color:0x79502d}));trunk.position.set(x,.7*s,z);trunk.castShadow=true;world.add(trunk);const crown=new THREE.Mesh(new THREE.SphereGeometry(.72*s,12,10),new THREE.MeshStandardMaterial({color:0x34744b}));crown.position.set(x,1.65*s,z);crown.castShadow=true;world.add(crown)}
+for(let i=0;i<28;i++){const a=i/28*Math.PI*2,r=10+Math.random()*7;tree(Math.cos(a)*r,Math.sin(a)*r,.7+Math.random()*.7)}
+for(let i=0;i<18;i++){const rock=new THREE.Mesh(new THREE.DodecahedronGeometry(.28+Math.random()*.35),new THREE.MeshStandardMaterial({color:0x89918a,roughness:1}));rock.position.set((Math.random()-.5)*27,.25,(Math.random()-.5)*27);rock.castShadow=true;world.add(rock)}
+const habitats=[
+ {name:'Forest',x:-8,z:-5,color:0x3e9b55,fact:'Forests provide homes and food for a huge variety of plants and animals.',q:'What do forests provide for wildlife?',choices:['Shelter and food','Only hot sand','Plastic and metal'],answer:0},
+ {name:'Ocean',x:0,z:9,color:0x328cce,fact:'Oceans help regulate Earth’s climate and support countless marine species.',q:'How do oceans help our planet?',choices:['They help regulate climate','They stop all rainfall','They make land animals fly'],answer:0},
+ {name:'Wildlife Haven',x:8,z:-3,color:0xe0a63c,fact:'A healthy habitat gives animals access to food, water, shelter, and space.',q:'What does a healthy habitat offer animals?',choices:['Food, water, shelter, and space','Only roads','Loud noises'],answer:0}
+];
+const water=new THREE.Mesh(new THREE.CircleGeometry(6.6,48),new THREE.MeshStandardMaterial({color:0x429ed0,roughness:.35,transparent:true,opacity:.88}));water.rotation.x=-Math.PI/2;water.position.set(0,.06,9);world.add(water);
+const markers=[];for(const h of habitats){const pad=new THREE.Mesh(new THREE.CylinderGeometry(1.05,1.05,.24,24),new THREE.MeshStandardMaterial({color:h.color,emissive:h.color,emissiveIntensity:.3}));pad.position.set(h.x,.15,h.z);pad.castShadow=true;world.add(pad);const halo=new THREE.Mesh(new THREE.TorusGeometry(1.35,.055,8,48),new THREE.MeshBasicMaterial({color:h.color}));halo.rotation.x=Math.PI/2;halo.position.set(h.x,.3,h.z);world.add(halo);markers.push({pad,halo,h})}
+const keys=new Set();let score=0,quizOpen=false,toastTimer;
+const scoreEl=document.querySelector('#score'),biomeEl=document.querySelector('#biome'),objectiveEl=document.querySelector('#objective'),toast=document.querySelector('#toast'),quiz=document.querySelector('#quiz'),answers=document.querySelector('#answers'),feedback=document.querySelector('#feedback');
+const completed=new Set();
+function say(text){toast.textContent=text;toast.hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.hidden=true,2100)}
+function nearest(){return habitats.map(h=>({h,d:Math.hypot(player.position.x-h.x,player.position.z-h.z)})).sort((a,b)=>a.d-b.d)[0]}
+function refreshStatus(){const {h,d}=nearest();biomeEl.textContent=d<4?h.name:'Meadow';objectiveEl.textContent=d<4?`Press E to explore ${h.name}. ${h.fact}`:'Explore the island and find a glowing habitat.'}
+function startQuiz(h){if(quizOpen)return;quizOpen=true;quiz.hidden=false;document.querySelector('#quiz-title').textContent=`${h.name.toUpperCase()} CHALLENGE`;document.querySelector('#question').textContent=h.q;feedback.textContent='';answers.replaceChildren();h.choices.forEach((choice,i)=>{const button=document.createElement('button');button.className='answer';button.textContent=choice;button.addEventListener('click',()=>{if(i===h.answer){feedback.textContent=`Correct! ${h.fact}`;if(!completed.has(h.name)){score+=10;completed.add(h.name);scoreEl.innerHTML=`${score} <small>PTS</small>`}}else feedback.textContent=`Not quite. ${h.fact}`;answers.querySelectorAll('button').forEach(b=>b.disabled=true);setTimeout(closeQuiz,2100)});answers.append(button)});answers.querySelector('button')?.focus()}
+function closeQuiz(){quiz.hidden=true;quizOpen=false}
+document.querySelector('#close').addEventListener('click',closeQuiz);quiz.addEventListener('click',e=>{if(e.target===quiz)closeQuiz()});
+function interact(){const {h,d}=nearest();if(d<4.2)startQuiz(h);else say('Get closer to a glowing habitat to begin a challenge.')}
+const keyMap={KeyW:'up',ArrowUp:'up',KeyS:'down',ArrowDown:'down',KeyA:'left',ArrowLeft:'left',KeyD:'right',ArrowRight:'right'};
+addEventListener('keydown',e=>{if(e.code==='Escape'&&quizOpen){closeQuiz();return}if(e.code==='KeyE'&&!quizOpen){interact();return}if(keyMap[e.code]){keys.add(keyMap[e.code]);e.preventDefault()}});addEventListener('keyup',e=>{if(keyMap[e.code])keys.delete(keyMap[e.code])});
+for(const button of document.querySelectorAll('[data-move]')){const dir=button.dataset.move;button.addEventListener('pointerdown',e=>{e.preventDefault();keys.add(dir);button.setPointerCapture(e.pointerId)});for(const type of ['pointerup','pointercancel','lostpointercapture'])button.addEventListener(type,()=>keys.delete(dir))}
+const clock=new THREE.Clock();function tick(){requestAnimationFrame(tick);const dt=Math.min(clock.getDelta(),.04);if(!quizOpen){const x=(keys.has('right')?1:0)-(keys.has('left')?1:0),z=(keys.has('down')?1:0)-(keys.has('up')?1:0);if(x||z){const length=Math.hypot(x,z);player.position.x+=x/length*5.5*dt;player.position.z+=z/length*5.5*dt;player.position.x=THREE.MathUtils.clamp(player.position.x,-17,17);player.position.z=THREE.MathUtils.clamp(player.position.z,-17,17);player.rotation.y=Math.atan2(x,z)}}refreshStatus();for(const {pad,halo,h} of markers){const bob=Math.sin(clock.elapsedTime*2+h.x)*.1;pad.position.y=.15+bob;halo.position.y=.31+bob}const target=new THREE.Vector3(player.position.x,6.6,player.position.z+8);camera.position.lerp(target,.09);camera.lookAt(player.position.x,1,player.position.z);renderer.render(scene,camera)}
+addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});refreshStatus();say('Welcome, explorer! Find a glowing habitat.');tick();

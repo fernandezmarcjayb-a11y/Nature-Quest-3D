@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#183b2c">
+  <title>Nature Quest 3D</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main id="game" aria-label="Nature Quest game">
+    <canvas id="gameCanvas" aria-label="3D nature world"></canvas>
+    <section class="hud" aria-live="polite">
+      <header class="card title"><div><span class="eyebrow">A MINI LEARNING ADVENTURE</span><h1>Nature Quest <span>3D</span></h1></div><strong id="score">0 <small>PTS</small></strong></header>
+      <div class="card status"><div><span class="label">CURRENT REGION</span><strong id="biome">Meadow</strong></div><div class="objective" id="objective">Explore the island and find a glowing habitat.</div></div>
+      <div class="card controls"><b>EXPLORE</b><span>WASD / arrows to move</span><span><kbd>E</kbd> interact with a habitat</span></div>
+    </section>
+    <div id="toast" role="status" class="toast" hidden></div>
+    <section id="quiz" class="overlay" hidden aria-modal="true" role="dialog" aria-labelledby="question">
+      <div class="quiz-card"><div class="quiz-top"><span id="quiz-title">HABITAT CHALLENGE</span><button id="close" aria-label="Close quiz">×</button></div><h2 id="question"></h2><div id="answers" class="answers"></div><p id="feedback" aria-live="polite"></p></div>
+    </section>
+    <div class="mobile-controls" aria-label="Touch movement controls"><button data-move="up" aria-label="Move forward">▲</button><div><button data-move="left" aria-label="Move left">◀</button><button data-move="down" aria-label="Move backward">▼</button><button data-move="right" aria-label="Move right">▶</button></div></div>
+  </main>
+  <script type="module" src="game.js"></script>
+</body>
+</html>
