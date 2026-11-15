@@ -1,6 +1,6 @@
 # Nature Quest 3D
 
-Nature Quest is a small browser-based educational adventure prototype. Explore a handcrafted 3D island, collect glowing nature clues, and complete quizzes in the Forest, Ocean, and Wildlife Haven.
+Nature Quest is a browser-based educational adventure prototype. Explore a handcrafted 3D island, collect glowing nature clues, and complete quizzes in the Forest, Ocean, and Wildlife Haven.
 
 ## Play locally
 
@@ -23,12 +23,21 @@ Open <http://localhost:8000>.
 
 Correct habitat answers earn 25 points; collected clues earn 5 points each. Your best score is saved in browser local storage when the quest is completed. No account or server-side data is used.
 
+## Updated features
+
+- Quest log panel and island mini-map
+- Better in-game objective feedback
+- Start screen and polished end-of-game state
+- Mobile touch controls and responsive HUD
+- Sound toggle with lightweight tone effects
+- Progress indicator and saved high score
+
 ## Project files
 
-- `index.html` — game interface, accessible dialogs, HUD, and touch controls
+- `index.html` — game interface, dialogs, HUD, quest log, and touch controls
 - `style.css` — responsive UI and reduced-motion styling
-- `game.js` — Three.js world, movement, collectibles, quizzes, score, and game loop
+- `game.js` — Three.js world, movement, collectibles, minimap, quizzes, score, and game loop
 
 ## Release note
 
-This is a self-contained prototype, not yet a production-certified release. It loads Three.js from a CDN, so it requires network access. Before a public release, test target browsers/devices and accessibility, decide a hosting setup, and pin or self-host the runtime dependency.
+This is a self-contained prototype, not yet a production-certified release. It loads Three.js from a CDN, so it requires network access. Before a public release, test on target browsers and devices, decide a hosting setup, and pin or self-host the runtime dependency.
