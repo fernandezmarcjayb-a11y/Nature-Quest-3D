@@ -1,22 +1,31 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#183b2c">
-  <title>Nature Quest 3D</title>
+  <meta name="description" content="Explore a tiny 3D world, collect nature clues, and learn about forests, oceans, and wildlife in Nature Quest.">
+  <title>Nature Quest 3D — A Mini Learning Adventure</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <main id="game" aria-label="Nature Quest game">
-    <canvas id="gameCanvas" aria-label="3D nature world"></canvas>
-    <section class="hud" aria-live="polite">
+    <canvas id="gameCanvas" aria-label="Three-dimensional nature island"></canvas>
+    <section class="hud" aria-label="Game status" aria-live="polite">
       <header class="card title"><div><span class="eyebrow">A MINI LEARNING ADVENTURE</span><h1>Nature Quest <span>3D</span></h1></div><strong id="score">0 <small>PTS</small></strong></header>
-      <div class="card status"><div><span class="label">CURRENT REGION</span><strong id="biome">Meadow</strong></div><div class="objective" id="objective">Explore the island and find a glowing habitat.</div></div>
-      <div class="card controls"><b>EXPLORE</b><span>WASD / arrows to move</span><span><kbd>E</kbd> interact with a habitat</span></div>
+      <div class="card status"><div class="region-row"><span class="label">CURRENT REGION</span><strong id="biome">Meadow</strong></div><div class="objective" id="objective">Explore the island and find a glowing habitat.</div><div class="progress-row"><span>Nature clues</span><strong id="clue-count">0 / 6</strong></div><div class="progress-track" role="progressbar" aria-label="Nature clues collected" aria-valuemin="0" aria-valuemax="6" aria-valuenow="0"><span id="progress-fill"></span></div></div>
+      <div class="card controls"><b>EXPLORE</b><span>WASD / arrows to move</span><span><kbd>E</kbd> interact with a habitat</span><span>Collect glowing seeds along the way</span></div>
     </section>
+    <button id="sound-toggle" class="sound-toggle" type="button" aria-pressed="false" title="Toggle sound">Sound: Off</button>
     <div id="toast" role="status" class="toast" hidden></div>
+    <section id="start-screen" class="overlay" aria-modal="true" role="dialog" aria-labelledby="start-title">
+      <div class="dialog start-card"><span class="eyebrow">YOUR ADVENTURE STARTS HERE</span><h2 id="start-title">Discover the wild.</h2><p>Explore a living island, gather nature clues, and test what you learn in three habitat challenges.</p><ul><li>Find the Forest, Ocean, and Wildlife Haven</li><li>Collect six glowing nature seeds</li><li>Answer each habitat quiz to finish your quest</li></ul><button id="play" class="primary" type="button">Start exploring <span aria-hidden="true">→</span></button><p class="small-note">WASD / arrow keys to move · E to interact</p></div>
+    </section>
     <section id="quiz" class="overlay" hidden aria-modal="true" role="dialog" aria-labelledby="question">
-      <div class="quiz-card"><div class="quiz-top"><span id="quiz-title">HABITAT CHALLENGE</span><button id="close" aria-label="Close quiz">×</button></div><h2 id="question"></h2><div id="answers" class="answers"></div><p id="feedback" aria-live="polite"></p></div>
+      <div class="dialog quiz-card"><div class="quiz-top"><span id="quiz-title">HABITAT CHALLENGE</span><button id="close" class="icon-button" type="button" aria-label="Close quiz">×</button></div><h2 id="question"></h2><div id="answers" class="answers"></div><p id="feedback" class="feedback" aria-live="polite"></p></div>
+    </section>
+    <section id="finish-screen" class="overlay" hidden aria-modal="true" role="dialog" aria-labelledby="finish-title">
+      <div class="dialog finish-card"><span class="eyebrow">QUEST COMPLETE</span><h2 id="finish-title">Nature needs explorers like you.</h2><p id="finish-message"></p><div class="finish-score" id="finish-score"></div><button id="play-again" class="primary" type="button">Play again <span aria-hidden="true">↻</span></button></div>
     </section>
     <div class="mobile-controls" aria-label="Touch movement controls"><button data-move="up" aria-label="Move forward">▲</button><div><button data-move="left" aria-label="Move left">◀</button><button data-move="down" aria-label="Move backward">▼</button><button data-move="right" aria-label="Move right">▶</button></div></div>
   </main>
